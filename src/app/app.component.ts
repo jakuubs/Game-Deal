@@ -15,7 +15,7 @@ import {
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { Game, StoreInfo } from 'src/schema/schema';
+import { StoreInfo } from 'src/schema/schema';
 
 @Component({
   selector: 'app-root',
