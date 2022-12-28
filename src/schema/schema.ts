@@ -8,7 +8,7 @@ export interface Game {
 }
 
 export interface GameInfo {
-  storeID: string;
+  storeID: number;
   gameID: string;
   name: string;
   steamAppID: string;
