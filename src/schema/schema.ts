@@ -42,3 +42,16 @@ export interface Deal {
   cheaperStores: Store[];
   cheapestPrice: CheapestPrice;
 }
+
+export interface Images {
+  banner: string;
+  logo: string;
+  icon: string;
+}
+
+export interface StoreInfo {
+  storeID: number;
+  storeName: string;
+  isActive: boolean;
+  images: Images;
+}

@@ -1,3 +1,4 @@
+import { StoreInfo } from './../schema/schema';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Deal, Game } from 'src/schema/schema';
@@ -17,5 +18,9 @@ export class GameService {
 
   getDeal(dealID: string) {
     return this.http.get<Deal>(`${this.apiUrl}/deals?id=${dealID}`);
+  }
+
+  getStores() {
+    return this.http.get<StoreInfo[]>(`${this.apiUrl}/stores`);
   }
 }

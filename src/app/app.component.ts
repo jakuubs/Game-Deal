@@ -1,14 +1,21 @@
 import { GameService } from './game.service';
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { fromEvent, of } from 'rxjs';
 import {
   catchError,
   debounceTime,
   distinctUntilChanged,
+  map,
   switchMap,
   tap,
 } from 'rxjs/operators';
-import { Deal, Game } from 'src/schema/schema';
+import { Game, StoreInfo } from 'src/schema/schema';
 
 @Component({
   selector: 'app-root',
@@ -36,23 +43,30 @@ import { Deal, Game } from 'src/schema/schema';
           <img class="game-thumbnail" src="{{ game.thumb }}" />
           <button (click)="getDeal(game.cheapestDealID)">Show deal</button>
           <div *ngIf="deal && shouldShowDeal(game.gameID)">
-            <p>Retail price: {{ deal.retailPrice }}</p>
-            <p>Sale price: {{ deal.salePrice }}</p>
-            <p>Store: {{ deal.storeID }}</p>
+            <p>Retail price: {{ deal.retailPrice | currency:'USD' }}</p>
+            <p>Sale price: {{ deal.salePrice | currency:'USD' }}</p>
+            <p>Store: {{ getStore(deal.storeID) }}</p>
           </div>
           <div></div>
         </li>
       </ul>
     </div>`,
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements AfterViewInit, OnInit {
   @ViewChild('gameSearch') gameSearchInput!: ElementRef<HTMLInputElement>;
 
+  stores: StoreInfo[] = [];
   games: Game[] = [];
   deal: any = null;
   isLoading: boolean = false;
 
   constructor(private gameService: GameService) {}
+
+  ngOnInit(): void {
+    this.gameService
+      .getStores()
+      .pipe(map((stores) => stores.filter((store) => store.isActive!!))).subscribe(stores => this.stores = stores);
+  }
 
   ngAfterViewInit(): void {
     fromEvent(this.gameSearchInput.nativeElement, 'keyup')
@@ -82,7 +96,6 @@ export class AppComponent implements AfterViewInit {
       .getDeal(cheapestDealID)
       .pipe(catchError((error, caught) => of(null)))
       .subscribe((deal) => {
-        console.log(deal);
         if (deal) {
           const { gameID, retailPrice, salePrice, storeID } = deal.gameInfo;
           this.deal = {
@@ -100,5 +113,13 @@ export class AppComponent implements AfterViewInit {
       return true;
     }
     return false;
+  }
+
+  getStore(storeID: number): string {
+    const store = this.stores.find(s => s.storeID === storeID);
+    if (store) {
+      return store.storeName;
+    }
+    return 'This store is not available :(';
   }
 }
