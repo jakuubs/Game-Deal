@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Game } from 'src/schema/schema';
+import { Deal, Game } from 'src/schema/schema';
 
 @Injectable({
   providedIn: 'root'
@@ -13,5 +13,9 @@ export class GameService {
 
   getGames(searchTerm: string) {
     return this.http.get<Game[]>(`${this.apiUrl}/games?title=${searchTerm}`);
+  }
+
+  getDeal(dealID: string) {
+    return this.http.get<Deal>(`${this.apiUrl}/deals?id=${dealID}`);
   }
 }
